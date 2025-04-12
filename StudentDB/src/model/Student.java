@@ -1,0 +1,72 @@
+package model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class Student {
+
+    protected static int nextId = 1;
+
+    protected int id;
+    protected String jmeno;
+    protected String prijmeni;
+    protected int year;
+    protected List<Integer> grades = new ArrayList<>();
+
+    public Student(String jmeno, String prijmeni, int year) {
+        this.id = nextId++;
+        this.jmeno = jmeno;
+        this.prijmeni = prijmeni;
+        this.year = year;
+    }
+
+
+    public Student(int id, String jmeno, String prijmeni, int year, List<Integer> grades) {
+        this.id = id;
+        this.jmeno = jmeno;
+        this.prijmeni = prijmeni;
+        this.year = year;
+        this.grades = new ArrayList<>(grades); 
+
+        if (id >= nextId) {
+            nextId = id + 1;
+        }
+    }
+
+    public void addGrade(int grade) {
+        grades.add(grade);
+    }
+
+    public double getAverageGrade() {
+        if (grades.isEmpty()) {
+            return 0;
+        }
+        int sum = 0;
+        for (int grade : grades) {
+            sum += grade;
+        }
+        return (double) sum / grades.size();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getJmeno() {
+        return jmeno;
+    }
+
+    public String getPrijmeni() {
+        return prijmeni;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public List<Integer> getGrades() {
+        return grades;
+    }
+
+    public abstract void showSkill();
+}
