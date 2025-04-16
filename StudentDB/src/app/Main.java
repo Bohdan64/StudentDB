@@ -1,49 +1,110 @@
 package app;
 
-import model.Student;
 import model.StudentManager;
 import model.StudyProgram;
+import model.Student;
 
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
-        Scanner sc = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         StudentManager manager = new StudentManager();
-        
-        System.out.println("Obor studenta (1 - Kyberbezpečnost, 2 - Telekomunikace):");
-        int choice = sc.nextInt();
-        sc.nextLine();
 
-        StudyProgram program = switch (choice) {
-        case 1 -> StudyProgram.CYBERSECURITY;
-        case 2 -> StudyProgram.TELECOMMUNICATIONS;
-		default ->
-		throw new IllegalArgumentException("Neplatný výběr oboru");
-		};
+        boolean running = true;
 
-        System.out.println("Jméno studenta:");
-        String jmeno = sc.nextLine();
+        while (running) {
+            System.out.println("\n=== MENU ===");
+            System.out.println("1 - Přidat studenta");
+            System.out.println("2 - Přidat známku");
+            System.out.println("3 - Zobrazit informace a spustit dovednost");
+            System.out.println("4 - Odstranit studenta");
+            System.out.println("0 - Konec");
+            System.out.print("Volba: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
 
-        System.out.println("Příjmení studenta:");
-        String prijmeni = sc.nextLine();
+            switch (choice) {
+                case 1 -> {
+                    System.out.print("Jméno: ");
+                    String jmeno = scanner.nextLine();
+                    System.out.print("Příjmení: ");
+                    String prijmeni = scanner.nextLine();
+                    System.out.print("Rok narození: ");
+                    int rok = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.print("Obor (1 - Kyberbezpečnost, 2 - Telekomunikace): ");
+                    int oborVolba = scanner.nextInt();
+                    scanner.nextLine();
 
-        System.out.println("Rok narození:");
-        int year = sc.nextInt();
-        
-        Student student = manager.addStudent(program, jmeno, prijmeni, year);
+                    StudyProgram program = switch (oborVolba) {
+                        case 1 -> StudyProgram.CYBERSECURITY;
+                        case 2 -> StudyProgram.TELECOMMUNICATIONS;
+                        default -> {
+                            System.out.println("Neplatný výběr oboru.");
+                            yield null;
+                        }
+                    };
 
-        System.out.println("Student byl vytvořen:");
-        System.out.println("ID: " + student.getId());
-        System.out.println("Jméno: " + student.getJmeno());
-        System.out.println("Příjmení: " + student.getPrijmeni());
-        System.out.println("Rok narození: " + student.getYear());
-        System.out.println("Průměr známek: " + student.getAverageGrade());
+                    if (program != null) {
+                        manager.addStudent(program, jmeno, prijmeni, rok);
+                    }
+                }
 
-        System.out.println("Speciální dovednost:");
-        student.showSkill();
+                case 2 -> {
+                    System.out.print("ID studenta: ");
+                    int id = scanner.nextInt();
+                    System.out.print("Známka (1-5): ");
+                    int grade = scanner.nextInt();
+                    scanner.nextLine();
 
-        sc.close();
+                    boolean success = manager.addGrade(id, grade);
+                    if (success) {
+                        System.out.println("Známka přidána.");
+                    }
+                }
+
+                case 3 -> {
+                    System.out.print("ID studenta: ");
+                    int id = scanner.nextInt();
+                    scanner.nextLine();
+
+                    Student student = manager.getStudentById(id);
+                    if (student != null) {
+                        System.out.println("ID: " + student.getId());
+                        System.out.println("Jméno: " + student.getJmeno());
+                        System.out.println("Příjmení: " + student.getPrijmeni());
+                        System.out.println("Rok narození: " + student.getYear());
+                        System.out.println("Průměr známek: " + student.getAverageGrade());
+                        System.out.println("Dovednost:");
+                        student.showSkill();
+                    } else {
+                        System.out.println("Student s tímto ID nebyl nalezen.");
+                    }
+                }
+                
+                case 4 -> {
+                    System.out.print("Zadejte ID studenta k odstranění: ");
+                    int id = scanner.nextInt();
+                    scanner.nextLine();
+
+                    boolean removed = manager.removeStudentById(id);
+                    if (removed) {
+                        System.out.println("Student byl úspěšně odstraněn.");
+                    } else {
+                        System.out.println("Student s tímto ID nebyl nalezen.");
+                    }
+                }
+
+                case 0 -> {
+                    running = false;
+                    System.out.println("Program ukončen.");
+                }
+
+                default -> System.out.println("Neplatná volba.");
+            }
+        }
+
+        scanner.close();
     }
 }
