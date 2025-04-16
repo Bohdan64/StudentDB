@@ -25,11 +25,11 @@ public class TelecomStudent extends Student {
     }
 
     public TelecomStudent(String jmeno, String prijmeni, int year) {
-        super(jmeno, prijmeni, year);
+        super(jmeno, prijmeni, year, StudyProgram.TELECOMMUNICATIONS);
     }
 
     public TelecomStudent(int id, String jmeno, String prijmeni, int year, List<Integer> grades) {
-        super(id, jmeno, prijmeni, year, grades);
+        super(id, jmeno, prijmeni, year, grades, StudyProgram.TELECOMMUNICATIONS);
     }
 
     @Override

@@ -16,4 +16,6 @@ public enum StudyProgram {
 	    };
 	
 	public abstract Student createStudent(String jmeno, String prijmeni, int year);
+	
 }
+

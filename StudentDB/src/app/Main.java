@@ -19,6 +19,7 @@ public class Main {
             System.out.println("2 - Přidat známku");
             System.out.println("3 - Zobrazit informace a spustit dovednost");
             System.out.println("4 - Odstranit studenta");
+            System.out.println("5 - Seřazený výpis všech studentů dle oborů");
             System.out.println("0 - Konec");
             System.out.print("Volba: ");
             int choice = scanner.nextInt();
@@ -82,7 +83,7 @@ public class Main {
                         System.out.println("Student s tímto ID nebyl nalezen.");
                     }
                 }
-                
+
                 case 4 -> {
                     System.out.print("Zadejte ID studenta k odstranění: ");
                     int id = scanner.nextInt();
@@ -94,6 +95,10 @@ public class Main {
                     } else {
                         System.out.println("Student s tímto ID nebyl nalezen.");
                     }
+                }
+
+                case 5 -> {
+                    manager.printAllStudentsGroupedAndSorted();
                 }
 
                 case 0 -> {

@@ -11,22 +11,25 @@ public abstract class Student {
     protected String jmeno;
     protected String prijmeni;
     protected int year;
+    private final StudyProgram program;
     protected List<Integer> grades = new ArrayList<>();
 
-    public Student(String jmeno, String prijmeni, int year) {
+    public Student(String jmeno, String prijmeni, int year, StudyProgram program) {
         this.id = nextId++;
         this.jmeno = jmeno;
         this.prijmeni = prijmeni;
         this.year = year;
+        this.program = program;
     }
 
 
-    public Student(int id, String jmeno, String prijmeni, int year, List<Integer> grades) {
+    public Student(int id, String jmeno, String prijmeni, int year, List<Integer> grades, StudyProgram program) {
         this.id = id;
         this.jmeno = jmeno;
         this.prijmeni = prijmeni;
         this.year = year;
         this.grades = new ArrayList<>(grades); 
+        this.program = program;
 
         if (id >= nextId) {
             nextId = id + 1;
@@ -68,5 +71,9 @@ public abstract class Student {
         return grades;
     }
 
+    public StudyProgram getProgram() {
+        return program;
+    }
+    
     public abstract void showSkill();
 }

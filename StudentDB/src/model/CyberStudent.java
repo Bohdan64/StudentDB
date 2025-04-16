@@ -7,11 +7,11 @@ import java.util.List;
 public class CyberStudent extends Student {
 
 	public CyberStudent(int id, String jmeno, String prijmeni, int year, List<Integer> grades) {
-		super(id, jmeno, prijmeni, year, grades);
+		super(id, jmeno, prijmeni, year, grades, StudyProgram.CYBERSECURITY);
 	}
 
 	public CyberStudent(String jmeno, String prijmeni, int year) {
-		super(jmeno, prijmeni, year);
+		super(jmeno, prijmeni, year, StudyProgram.CYBERSECURITY);
 	}
 	
 	@Override

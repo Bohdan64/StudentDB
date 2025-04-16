@@ -2,7 +2,9 @@ package model;
 
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StudentManager{
 	
@@ -39,7 +41,7 @@ public class StudentManager{
         return student != null;
     }
     
-    public void ShowSkill(int id) {
+    public void showSkill(int id) {
     	Student student = studentsById.get(id);
     	if (student != null) {
 			student.showSkill();
@@ -48,6 +50,37 @@ public class StudentManager{
 		}
     }
     
+    public List<Student> getStudentsByProgramSorted(StudyProgram program) {
+        return studentsById.values().stream()
+            .filter(s -> s.getProgram() == program)
+            .sorted(StudentComparators.BY_SURNAME_THEN_NAME)
+            .collect(Collectors.toList());
+    }
+    
+    public void printStudents(List<Student> students) {
+        if (students.isEmpty()) {
+            System.out.println("Žádní studenti v této skupině.");
+            return;
+        }
+
+        System.out.printf("%-5s %-15s %-15s %-15s %-10s%n", "ID", "Jméno", "Příjmení", "Rok narození", "Průměr");
+        System.out.println("---------------------------------------------------------------------");
+
+        for (Student s : students) {
+            System.out.printf("%-5d %-15s %-15s %-15d %-10.2f%n",
+                    s.getId(), s.getJmeno(), s.getPrijmeni(), s.getYear(), s.getAverageGrade());
+        }
+    }
+
+
+    public void printAllStudentsGroupedAndSorted() {
+        for (StudyProgram program : StudyProgram.values()) {
+            System.out.println("=== " + program.name() + " ===");
+            List<Student> sorted = getStudentsByProgramSorted(program);
+            printStudents(sorted);
+            System.out.println();
+        }
+    }
     
 
 
