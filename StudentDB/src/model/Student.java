@@ -41,16 +41,13 @@ public abstract class Student {
     }
 
     public double getAverageGrade() {
-        if (grades.isEmpty()) {
-            return 0;
-        }
-        int sum = 0;
-        for (int grade : grades) {
-            sum += grade;
-        }
-        return (double) sum / grades.size();
+        return grades.stream()
+                     .mapToInt(Integer::intValue)
+                     .average()
+                     .orElse(0.0);
     }
 
+    
     public int getId() {
         return id;
     }
