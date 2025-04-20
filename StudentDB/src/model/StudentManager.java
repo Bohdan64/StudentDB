@@ -2,9 +2,7 @@ package model;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class StudentManager{
 	
@@ -40,6 +38,7 @@ public class StudentManager{
         Student student = studentsById.remove(id);
         return student != null;
     }
+
     
     public void showSkill(int id) {
     	Student student = studentsById.get(id);
@@ -50,11 +49,13 @@ public class StudentManager{
 		}
     }
     
+    
+    
     public List<Student> getStudentsByProgramSorted(StudyProgram program) {
         return studentsById.values().stream()
-            .filter(s -> s.getProgram() == program)
+            .filter(student -> student.getProgram() == program)
             .sorted(StudentComparators.BY_SURNAME_THEN_NAME)
-            .collect(Collectors.toList());
+            .toList();
     }
     
     public void printStudents(List<Student> students) {
@@ -72,7 +73,6 @@ public class StudentManager{
         }
     }
 
-
     public void printAllStudentsGroupedAndSorted() {
         for (StudyProgram program : StudyProgram.values()) {
             System.out.println("=== " + program.name() + " ===");
@@ -81,7 +81,21 @@ public class StudentManager{
             System.out.println();
         }
     }
+
     
+    public double getAverageGradeProgram(StudyProgram program) {
+    	return studentsById.values().stream()
+    			.filter(student -> student.getProgram() == program)
+    			.mapToDouble(Student::getAverageGrade)
+    			.average()
+    			.orElse(0.0);
+    }
+    
+    public long getCountByProgram(StudyProgram program) {
+        return studentsById.values().stream()
+                .filter(student -> student.getProgram() == program)
+                .count();
+    }
 
 
      

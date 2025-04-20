@@ -22,7 +22,6 @@ public abstract class Student {
         this.program = program;
     }
 
-
     public Student(int id, String jmeno, String prijmeni, int year, List<Integer> grades, StudyProgram program) {
         this.id = id;
         this.jmeno = jmeno;
@@ -46,7 +45,6 @@ public abstract class Student {
                      .average()
                      .orElse(0.0);
     }
-
     
     public int getId() {
         return id;
