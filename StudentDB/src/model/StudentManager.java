@@ -7,10 +7,25 @@ import java.util.List;
 public class StudentManager{
 	
 	private Map<Integer, Student> studentsById = new HashMap<>();
+	
+    private Map<StudyProgram, Integer> studentCountByProgram = new HashMap<>();
+    private Map<StudyProgram, Double> totalGradesSumByProgram = new HashMap<>();
+    private Map<StudyProgram, Integer> totalGradesCountByProgram = new HashMap<>();
+
+    public StudentManager() {
+        for (StudyProgram program : StudyProgram.values()) {
+            studentCountByProgram.put(program, 0);
+            totalGradesSumByProgram.put(program, 0.0);
+            totalGradesCountByProgram.put(program, 0);
+        }
+    }    
 
 	public Student addStudent(StudyProgram program, String jmeno, String prijmeni, int year) {
 	    Student student = program.createStudent(jmeno, prijmeni, year);
 	    studentsById.put(student.getId(), student);
+	    
+        studentCountByProgram.put(program, studentCountByProgram.get(program) + 1);
+	    
 	    return student;
 	}
 
@@ -24,6 +39,15 @@ public class StudentManager{
         if (student != null) {
             if (grade >= 1 && grade <= 5) {
                 student.addGrade(grade);
+                
+                StudyProgram program = student.getProgram();
+
+                totalGradesSumByProgram.put(program,
+                        totalGradesSumByProgram.get(program) + grade);
+
+                totalGradesCountByProgram.put(program,
+                        totalGradesCountByProgram.get(program) + 1);
+                
                 return true;
             } else {
                 System.out.println("Chyba: Známka musí být v rozsahu 1 až 5.");
@@ -36,9 +60,13 @@ public class StudentManager{
     
     public boolean removeStudentById(int id) {
         Student student = studentsById.remove(id);
-        return student != null;
+        if (student != null) {
+            StudyProgram program = student.getProgram();
+            studentCountByProgram.put(program, studentCountByProgram.get(program) - 1);
+            return true;
+        }
+        return false;
     }
-
     
     public void showSkill(int id) {
     	Student student = studentsById.get(id);
@@ -83,20 +111,31 @@ public class StudentManager{
     }
 
     
-    public double getAverageGradeProgram(StudyProgram program) {
-    	return studentsById.values().stream()
-    			.filter(student -> student.getProgram() == program)
-    			.mapToDouble(Student::getAverageGrade)
-    			.average()
-    			.orElse(0.0);
-    }
+//    public double getAverageGradeProgram(StudyProgram program) {
+//    	return studentsById.values().stream()
+//    			.filter(student -> student.getProgram() == program)
+//    			.mapToDouble(Student::getAverageGrade)
+//    			.average()
+//    			.orElse(0.0);
+//    }
+//    
+//    public long getCountByProgram(StudyProgram program) {
+//        return studentsById.values().stream()
+//                .filter(student -> student.getProgram() == program)
+//                .count();
+//    }
     
-    public long getCountByProgram(StudyProgram program) {
-        return studentsById.values().stream()
-                .filter(student -> student.getProgram() == program)
-                .count();
+    public double getAverageGradeProgram(StudyProgram program) {
+        int count = totalGradesCountByProgram.getOrDefault(program, 0);
+        if (count == 0) return 0.0;
+
+        double sum = totalGradesSumByProgram.getOrDefault(program, 0.0);
+        return sum / count;
     }
 
-
-     
+    public long getCountByProgram(StudyProgram program) {
+        return studentCountByProgram.getOrDefault(program, 0);
+    }
 }
+
+ 
