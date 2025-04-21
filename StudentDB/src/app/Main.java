@@ -20,6 +20,8 @@ public class Main {
             System.out.println("3 - Zobrazit informace a spustit dovednost");
             System.out.println("4 - Odstranit studenta");
             System.out.println("5 - Seřazený výpis všech studentů dle oborů");
+            System.out.println("6 - Zobrazit počet studentů dle oboru");
+            System.out.println("7 - Zobrazit průměrnou známku dle oboru");
             System.out.println("0 - Konec");
             System.out.print("Volba: ");
             int choice = scanner.nextInt();
@@ -99,6 +101,22 @@ public class Main {
 
                 case 5 -> {
                     manager.printAllStudentsGroupedAndSorted();
+                }
+                
+                case 6 -> {
+                    System.out.println("\n--- Počet studentů dle oboru ---");
+                    for (StudyProgram program : StudyProgram.values()) {
+                        long count = manager.getCountByProgram(program);
+                        System.out.println(program.name() + ": " + count + " studentů");
+                    }
+                }
+
+                case 7 -> {
+                    System.out.println("\n--- Průměrné známky dle oboru ---");
+                    for (StudyProgram program : StudyProgram.values()) {
+                        double average = manager.getAverageGradeProgram(program);
+                        System.out.printf("%s: %.2f%n", program.name(), average);
+                    }
                 }
 
                 case 0 -> {
