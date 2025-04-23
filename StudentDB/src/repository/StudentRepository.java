@@ -5,6 +5,7 @@ import model.StudyProgram;
 import java.util.List;
 
 public interface StudentRepository {
+    void saveAll(List<Student> students);
     void save(Student student);
     boolean delete(int id);
     Student findById(int id);

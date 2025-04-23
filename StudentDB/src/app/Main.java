@@ -4,16 +4,25 @@ import model.StudentManager;
 import model.StudyProgram;
 import model.Student;
 import repository.InMemoryStudentRepository;
-import repository.StudentRepository;
+import repository.SQLStudentRepository;
 
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        StudentRepository repository = new InMemoryStudentRepository();
-        StudentManager manager = new StudentManager(repository);
+        SQLStudentRepository sqlRepository = new SQLStudentRepository();
+        sqlRepository.initializeSchema();
 
+        InMemoryStudentRepository inMemoryRepository = new InMemoryStudentRepository();
+
+        for (Student s : sqlRepository.findAll()) {
+            inMemoryRepository.save(s);
+        }
+        inMemoryRepository.updateNextId();
+
+        StudentManager manager = new StudentManager(inMemoryRepository);
+
+        Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
         while (running) {
@@ -53,8 +62,9 @@ public class Main {
                     };
 
                     if (program != null) {
-                    	Student student = program.createStudent(jmeno, prijmeni, rok);
+                        Student student = program.createStudent(jmeno, prijmeni, rok);
                         manager.addStudent(student);
+                        System.out.println("Student přidán.");
                     }
                 }
 
@@ -106,7 +116,7 @@ public class Main {
                 case 5 -> {
                     manager.printAllStudentsGroupedAndSorted();
                 }
-                
+
                 case 6 -> {
                     System.out.println("\n--- Počet studentů dle oboru ---");
                     for (StudyProgram program : StudyProgram.values()) {
@@ -124,8 +134,11 @@ public class Main {
                 }
 
                 case 0 -> {
+                    System.out.println("Ukládám změny do SQL databáze...");
+                    sqlRepository.clearDatabase();
+                    sqlRepository.saveAll(inMemoryRepository.findAll());
+                    System.out.println("Změny byly uloženy. Program ukončen.");
                     running = false;
-                    System.out.println("Program ukončen.");
                 }
 
                 default -> System.out.println("Neplatná volba.");

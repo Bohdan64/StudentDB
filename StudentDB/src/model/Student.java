@@ -5,9 +5,7 @@ import java.util.List;
 
 public abstract class Student {
 
-    protected static int nextId = 1;
-
-    protected int id;
+    protected Integer id = null;
     protected String jmeno;
     protected String prijmeni;
     protected int year;
@@ -15,7 +13,6 @@ public abstract class Student {
     protected List<Integer> grades = new ArrayList<>();
 
     public Student(String jmeno, String prijmeni, int year, StudyProgram program) {
-        this.id = nextId++;
         this.jmeno = jmeno;
         this.prijmeni = prijmeni;
         this.year = year;
@@ -29,10 +26,6 @@ public abstract class Student {
         this.year = year;
         this.grades = new ArrayList<>(grades); 
         this.program = program;
-
-        if (id >= nextId) {
-            nextId = id + 1;
-        }
     }
 
     public void addGrade(int grade) {
@@ -46,8 +39,12 @@ public abstract class Student {
                      .orElse(0.0);
     }
     
-    public int getId() {
+    public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getJmeno() {
