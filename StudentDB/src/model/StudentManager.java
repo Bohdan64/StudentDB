@@ -1,29 +1,31 @@
 package model;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import repository.StudentRepository;
 
 public class StudentManager{
 	
-	private Map<Integer, Student> studentsById = new HashMap<>();
+    private final StudentRepository repository;
 
-	public Student addStudent(StudyProgram program, String jmeno, String prijmeni, int year) {
-	    Student student = program.createStudent(jmeno, prijmeni, year);
-	    studentsById.put(student.getId(), student);
-	    return student;
-	}
+    public StudentManager(StudentRepository repository) {
+        this.repository = repository;
+    }
+	
+    public Student addStudent(Student student) {
+        repository.save(student);
+        return student;
+    }
 
-	public Student getStudentById(int id) {
-	    return studentsById.get(id);
-	}
-
+    public Student getStudentById(int id) {
+        return repository.findById(id);
+    }
     
     public boolean addGrade(int studentId, int grade) {
         Student student = getStudentById(studentId);
         if (student != null) {
             if (grade >= 1 && grade <= 5) {
                 student.addGrade(grade);
+                repository.save(student);
                 return true;
             } else {
                 System.out.println("Chyba: Známka musí být v rozsahu 1 až 5.");
@@ -35,27 +37,23 @@ public class StudentManager{
     }
     
     public boolean removeStudentById(int id) {
-        Student student = studentsById.remove(id);
-        return student != null;
+        return repository.delete(id);
     }
 
     
     public void showSkill(int id) {
-    	Student student = studentsById.get(id);
-    	if (student != null) {
-			student.showSkill();
-		} else {
-			System.out.println("Student s id " + id + " nebyl nalezen.");
-		}
+        Student student = getStudentById(id);
+        if (student != null) {
+            student.showSkill();
+        } else {
+            System.out.println("Student s id " + id + " nebyl nalezen.");
+        }
     }
     
-    
-    
     public List<Student> getStudentsByProgramSorted(StudyProgram program) {
-        return studentsById.values().stream()
-            .filter(student -> student.getProgram() == program)
-            .sorted(StudentComparators.BY_SURNAME_THEN_NAME)
-            .toList();
+        return repository.findByProgram(program).stream()
+                .sorted(StudentComparators.BY_SURNAME_THEN_NAME)
+                .toList();
     }
     
     public void printStudents(List<Student> students) {
@@ -81,22 +79,15 @@ public class StudentManager{
             System.out.println();
         }
     }
-
     
     public double getAverageGradeProgram(StudyProgram program) {
-    	return studentsById.values().stream()
-    			.filter(student -> student.getProgram() == program)
-    			.mapToDouble(Student::getAverageGrade)
-    			.average()
-    			.orElse(0.0);
+        return repository.findByProgram(program).stream()
+                .mapToDouble(Student::getAverageGrade)
+                .average()
+                .orElse(0.0);
     }
     
     public long getCountByProgram(StudyProgram program) {
-        return studentsById.values().stream()
-                .filter(student -> student.getProgram() == program)
-                .count();
+        return repository.findByProgram(program).size();
     }
-
-
-     
 }

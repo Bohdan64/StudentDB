@@ -3,13 +3,16 @@ package app;
 import model.StudentManager;
 import model.StudyProgram;
 import model.Student;
+import repository.InMemoryStudentRepository;
+import repository.StudentRepository;
 
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        StudentManager manager = new StudentManager();
+        StudentRepository repository = new InMemoryStudentRepository();
+        StudentManager manager = new StudentManager(repository);
 
         boolean running = true;
 
@@ -50,7 +53,8 @@ public class Main {
                     };
 
                     if (program != null) {
-                        manager.addStudent(program, jmeno, prijmeni, rok);
+                    	Student student = program.createStudent(jmeno, prijmeni, rok);
+                        manager.addStudent(student);
                     }
                 }
 
