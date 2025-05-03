@@ -2,9 +2,11 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
-public abstract class Student {
+public abstract class Student implements Serializable{
 
+    private static final long serialVersionUID = 1L;
     protected Integer id = null;
     protected String jmeno;
     protected String prijmeni;
@@ -34,9 +36,9 @@ public abstract class Student {
 
     public double getAverageGrade() {
         return grades.stream()
-                     .mapToInt(Integer::intValue)
-                     .average()
-                     .orElse(0.0);
+        		.mapToInt(Integer::intValue)
+        		.average()
+        		.orElse(0.0);
     }
     
     public Integer getId() {

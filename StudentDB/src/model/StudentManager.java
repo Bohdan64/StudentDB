@@ -3,7 +3,7 @@ package model;
 import java.util.List;
 import repository.StudentRepository;
 
-public class StudentManager{
+public class StudentManager {
 	
     private final StudentRepository repository;
 
@@ -39,7 +39,6 @@ public class StudentManager{
     public boolean removeStudentById(int id) {
         return repository.delete(id);
     }
-
     
     public void showSkill(int id) {
         Student student = getStudentById(id);

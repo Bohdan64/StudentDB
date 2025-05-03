@@ -7,4 +7,3 @@ public class StudentComparators {
         Comparator.comparing(Student::getPrijmeni)
                   .thenComparing(Student::getJmeno);
 }
-

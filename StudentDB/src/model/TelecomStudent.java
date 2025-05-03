@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class TelecomStudent extends Student {
 
+    private static final long serialVersionUID = 3L;
     private static final Map<Character, String> MORSE_MAP = new HashMap<>();
 
     static {

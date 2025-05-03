@@ -6,6 +6,8 @@ import java.util.List;
 
 public class CyberStudent extends Student {
 
+    private static final long serialVersionUID = 2L;
+	
 	public CyberStudent(int id, String jmeno, String prijmeni, int year, List<Integer> grades) {
 		super(id, jmeno, prijmeni, year, grades, StudyProgram.CYBERSECURITY);
 	}
@@ -16,7 +18,7 @@ public class CyberStudent extends Student {
 	
 	@Override
 	public void showSkill() {
-		String fullName = (jmeno + " " + prijmeni).toUpperCase();
+		String fullName = (jmeno + " " + prijmeni);
 		
 		try {
 			MessageDigest mDigest = MessageDigest.getInstance("SHA-256");

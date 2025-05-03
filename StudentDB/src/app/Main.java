@@ -1,28 +1,41 @@
 package app;
 
-import model.StudentManager;
-import model.StudyProgram;
-import model.Student;
-import repository.InMemoryStudentRepository;
-import repository.SQLStudentRepository;
+import model.*;
+import repository.*;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        SQLStudentRepository sqlRepository = new SQLStudentRepository();
-        sqlRepository.initializeSchema();
+        Scanner scanner = new Scanner(System.in);
 
+        System.out.println("1 - SQL režim");
+        System.out.println("2 - Souborový režim");
+        System.out.print("Volba: ");
+        int mode = readInt(scanner);
+
+        boolean isFileMode = mode == 2;
+
+        StudentRepository sourceRepository;
         InMemoryStudentRepository inMemoryRepository = new InMemoryStudentRepository();
 
-        for (Student s : sqlRepository.findAll()) {
+        if (mode == 1) {
+            SQLStudentRepository sqlRepository = new SQLStudentRepository();
+            sqlRepository.initializeSchema(); 
+            sourceRepository = sqlRepository;
+        } else {
+            sourceRepository = new FileStudentRepository();
+        }
+
+        for (Student s : sourceRepository.findAll()) {
             inMemoryRepository.save(s);
         }
         inMemoryRepository.updateNextId();
 
         StudentManager manager = new StudentManager(inMemoryRepository);
+        FileStudentRepository fileRepo = isFileMode ? (FileStudentRepository) sourceRepository : null;
 
-        Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
         while (running) {
@@ -36,8 +49,7 @@ public class Main {
             System.out.println("7 - Zobrazit průměrnou známku dle oboru");
             System.out.println("0 - Konec");
             System.out.print("Volba: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            int choice = readInt(scanner);
 
             switch (choice) {
                 case 1 -> {
@@ -46,11 +58,9 @@ public class Main {
                     System.out.print("Příjmení: ");
                     String prijmeni = scanner.nextLine();
                     System.out.print("Rok narození: ");
-                    int rok = scanner.nextInt();
-                    scanner.nextLine();
+                    int rok = readInt(scanner);
                     System.out.print("Obor (1 - Kyberbezpečnost, 2 - Telekomunikace): ");
-                    int oborVolba = scanner.nextInt();
-                    scanner.nextLine();
+                    int oborVolba = readInt(scanner);
 
                     StudyProgram program = switch (oborVolba) {
                         case 1 -> StudyProgram.CYBERSECURITY;
@@ -64,27 +74,31 @@ public class Main {
                     if (program != null) {
                         Student student = program.createStudent(jmeno, prijmeni, rok);
                         manager.addStudent(student);
-                        System.out.println("Student přidán.");
+                        System.out.println("Student přidán. ID studenta: " + student.getId());
+                        if (isFileMode) {
+                            fileRepo.save(student);
+                        }
                     }
                 }
 
                 case 2 -> {
                     System.out.print("ID studenta: ");
-                    int id = scanner.nextInt();
+                    int id = readInt(scanner);
                     System.out.print("Známka (1-5): ");
-                    int grade = scanner.nextInt();
-                    scanner.nextLine();
+                    int grade = readInt(scanner);
 
                     boolean success = manager.addGrade(id, grade);
                     if (success) {
-                        System.out.println("Známka přidána.");
+                        System.out.println("✅ Známka přidána.");
+                        if (isFileMode) {
+                            fileRepo.save(manager.getStudentById(id));
+                        }
                     }
                 }
 
                 case 3 -> {
                     System.out.print("ID studenta: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine();
+                    int id = readInt(scanner);
 
                     Student student = manager.getStudentById(id);
                     if (student != null) {
@@ -102,20 +116,20 @@ public class Main {
 
                 case 4 -> {
                     System.out.print("Zadejte ID studenta k odstranění: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine();
+                    int id = readInt(scanner);
 
                     boolean removed = manager.removeStudentById(id);
                     if (removed) {
-                        System.out.println("Student byl úspěšně odstraněn.");
+                        System.out.println("✅ Student byl úspěšně odstraněn.");
+                        if (isFileMode) {
+                            fileRepo.delete(id);
+                        }
                     } else {
                         System.out.println("Student s tímto ID nebyl nalezen.");
                     }
                 }
 
-                case 5 -> {
-                    manager.printAllStudentsGroupedAndSorted();
-                }
+                case 5 -> manager.printAllStudentsGroupedAndSorted();
 
                 case 6 -> {
                     System.out.println("\n--- Počet studentů dle oboru ---");
@@ -134,10 +148,24 @@ public class Main {
                 }
 
                 case 0 -> {
-                    System.out.println("Ukládám změny do SQL databáze...");
-                    sqlRepository.clearDatabase();
-                    sqlRepository.saveAll(inMemoryRepository.findAll());
-                    System.out.println("Změny byly uloženy. Program ukončen.");
+                    if (!isFileMode) {
+                        SQLStudentRepository sqlRepository = (SQLStudentRepository) sourceRepository;
+                        System.out.println("Ukládám změny do SQL databáze...");
+                        sqlRepository.clearDatabase();
+                        sqlRepository.saveAll(inMemoryRepository.findAll());
+                        System.out.println("Změny byly uloženy.");
+                    } else {
+                        System.out.print("Vložit změny do SQL databáze? (ano/ne): ");
+                        String answer = scanner.nextLine().trim().toLowerCase();
+                        if (answer.equals("ano")) {
+                            SQLStudentRepository sqlRepository = new SQLStudentRepository();
+                            sqlRepository.clearDatabase();
+                            sqlRepository.saveAll(inMemoryRepository.findAll());
+                            System.out.println("Změny byly vloženy do SQL databáze.");
+                        } else {
+                            System.out.println("Program ukončen bez uložení do SQL (souborový režim).");
+                        }
+                    }
                     running = false;
                 }
 
@@ -146,5 +174,18 @@ public class Main {
         }
 
         scanner.close();
+    }
+
+    private static int readInt(Scanner scanner) {
+        while (true) {
+            try {
+                int value = scanner.nextInt();
+                scanner.nextLine();
+                return value;
+            } catch (InputMismatchException e) {
+                System.out.print("⚠️ Zadejte platné číslo: ");
+                scanner.nextLine();
+            }
+        }
     }
 }
