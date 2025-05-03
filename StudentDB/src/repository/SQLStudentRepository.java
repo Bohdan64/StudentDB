@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class SQLStudentRepository implements StudentRepository {
 	private static final Logger logger = Logger.getLogger(SQLStudentRepository.class.getName());
-	private final String url = "jdbc:mysql://localhost:3306/mysql";
+	private final String url = "jdbc:mysql://localhost:3306/studentdb";
     private final String user = "root";
     private final String password = "root";
     

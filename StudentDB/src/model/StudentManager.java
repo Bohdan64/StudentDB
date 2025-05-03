@@ -2,6 +2,7 @@ package model;
 
 import java.util.List;
 import repository.StudentRepository;
+import java.util.Comparator;
 
 public class StudentManager {
 	
@@ -49,9 +50,18 @@ public class StudentManager {
         }
     }
     
-    public List<Student> getStudentsByProgramSorted(StudyProgram program) {
+    public List<Student> getStudentsByProgramSorted(StudyProgram program, SortMode mode) {
+        Comparator<Student> comparator = switch (mode) {
+            case BY_NAME -> StudentComparators.BY_NAME_THEN_SURNAME;
+            case BY_YEAR_ASC -> StudentComparators.BY_YEAR_ASC;
+            case BY_YEAR_DESC -> StudentComparators.BY_YEAR_DESC;
+            case BY_GRADE_ASC -> StudentComparators.BY_AVERAGE_GRADE_ASC;
+            case BY_GRADE_DESC -> StudentComparators.BY_AVERAGE_GRADE_DESC;
+            default -> StudentComparators.BY_SURNAME_THEN_NAME;
+        };
+
         return repository.findByProgram(program).stream()
-                .sorted(StudentComparators.BY_SURNAME_THEN_NAME)
+                .sorted(comparator)
                 .toList();
     }
     
@@ -70,10 +80,10 @@ public class StudentManager {
         }
     }
 
-    public void printAllStudentsGroupedAndSorted() {
+    public void printAllStudentsGroupedAndSorted(SortMode mode) {
         for (StudyProgram program : StudyProgram.values()) {
             System.out.println("=== " + program.name() + " ===");
-            List<Student> sorted = getStudentsByProgramSorted(program);
+            List<Student> sorted = getStudentsByProgramSorted(program, mode);
             printStudents(sorted);
             System.out.println();
         }

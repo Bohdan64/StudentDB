@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
 
-public abstract class Student implements Serializable{
+public abstract class Student implements Serializable {
 
     private static final long serialVersionUID = 1L;
     protected Integer id = null;

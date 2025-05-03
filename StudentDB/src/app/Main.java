@@ -59,12 +59,15 @@ public class Main {
                     String prijmeni = scanner.nextLine();
                     System.out.print("Rok narození: ");
                     int rok = readInt(scanner);
-                    System.out.print("Obor (1 - Kyberbezpečnost, 2 - Telekomunikace): ");
+                    System.out.print("Obor (1 - Kyberbezpečnost, 2 - Telekomunikace, 3 - IT, 4 - Bioinformatika, 5 - Mikroelektronika): ");
                     int oborVolba = readInt(scanner);
 
                     StudyProgram program = switch (oborVolba) {
-                        case 1 -> StudyProgram.CYBERSECURITY;
-                        case 2 -> StudyProgram.TELECOMMUNICATIONS;
+                    case 1 -> StudyProgram.CYBERSECURITY;
+                    case 2 -> StudyProgram.TELECOMMUNICATIONS;
+                    case 3 -> StudyProgram.INFORMATION_TECHNOLOGY;
+                    case 4 -> StudyProgram.BIOINFORMATICS;
+                    case 5 -> StudyProgram.MICROELECTRONICS;
                         default -> {
                             System.out.println("Neplatný výběr oboru.");
                             yield null;
@@ -129,8 +132,46 @@ public class Main {
                     }
                 }
 
-                case 5 -> manager.printAllStudentsGroupedAndSorted();
+                case 5 -> {
+                    System.out.println("Zvolte režim třídění:");
+                    System.out.println("1 - Příjmení + Jméno");
+                    System.out.println("2 - Jméno + Příjmení");
+                    System.out.println("3 - Rok narození vzestupně");
+                    System.out.println("4 - Rok narození sestupně");
+                    System.out.println("5 - Průměrná známka vzestupně");
+                    System.out.println("6 - Průměrná známka sestupně");
+                    System.out.print("Volba: ");
+                    int sortChoice = readInt(scanner);
 
+                    SortMode sortMode = switch (sortChoice) {
+                        case 2 -> SortMode.BY_NAME;
+                        case 3 -> SortMode.BY_YEAR_ASC;
+                        case 4 -> SortMode.BY_YEAR_DESC;
+                        case 5 -> SortMode.BY_GRADE_ASC;
+                        case 6 -> SortMode.BY_GRADE_DESC;
+                        default -> SortMode.BY_SURNAME;
+                    };
+
+                    System.out.println("Zvolte obor pro výpis:");
+                    int i = 1;
+                    for (StudyProgram program : StudyProgram.values()) {
+                        System.out.println(i + " - " + program.name());
+                        i++;
+                    }
+                    System.out.print("Volba: ");
+                    int oborVolba = readInt(scanner);
+
+                    if (oborVolba < 1 || oborVolba > StudyProgram.values().length) {
+                        System.out.println("Neplatná volba oboru.");
+                        break;
+                    }
+
+                    StudyProgram selectedProgram = StudyProgram.values()[oborVolba - 1];
+                    System.out.println("=== " + selectedProgram.name() + " ===");
+                    var sorted = manager.getStudentsByProgramSorted(selectedProgram, sortMode);
+                    manager.printStudents(sorted);
+                }
+                																																																																																																																	
                 case 6 -> {
                     System.out.println("\n--- Počet studentů dle oboru ---");
                     for (StudyProgram program : StudyProgram.values()) {
@@ -168,11 +209,9 @@ public class Main {
                     }
                     running = false;
                 }
-
                 default -> System.out.println("Neplatná volba.");
             }
         }
-
         scanner.close();
     }
 
