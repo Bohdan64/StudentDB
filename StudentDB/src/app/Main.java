@@ -109,6 +109,7 @@ public class Main {
                         System.out.println("Jméno: " + student.getJmeno());
                         System.out.println("Příjmení: " + student.getPrijmeni());
                         System.out.println("Rok narození: " + student.getYear());
+                        System.out.println("Program: " + student.getProgram().name());
                         System.out.println("Průměr známek: " + student.getAverageGrade());
                         System.out.println("Dovednost:");
                         student.showSkill();
@@ -204,7 +205,7 @@ public class Main {
                             sqlRepository.saveAll(inMemoryRepository.findAll());
                             System.out.println("Změny byly vloženy do SQL databáze.");
                         } else {
-                            System.out.println("Program ukončen bez uložení do SQL (souborový režim).");
+                            System.out.println("Program ukončen.");
                         }
                     }
                     running = false;
