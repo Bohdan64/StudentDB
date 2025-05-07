@@ -40,19 +40,6 @@ public class FileStudentRepository implements StudentRepository {
     }
 
     @Override
-    public Student findById(int id) {
-        String filename = DIRECTORY + id + ".ser";
-        if (!Files.exists(Paths.get(filename))) {
-            return null;
-        }
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
-            return (Student) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Chyba při načítání studenta ID: " + id, e);
-        }
-    }
-
-    @Override
     public List<Student> findAll() {
         List<Student> students = new ArrayList<>();
         try {
@@ -70,19 +57,21 @@ public class FileStudentRepository implements StudentRepository {
         }
         return students;
     }
-
-    @Override
-    public List<Student> findByProgram(StudyProgram program) {
-        List<Student> students = findAll();
-        return students.stream()
-                .filter(s -> s.getProgram() == program)
-                .toList();
-    }
     
     @Override
     public void saveAll(List<Student> students) {
         for (Student student : students) {
             save(student);
         }
+    }
+    
+    @Override
+    public List<Student> findByProgram(StudyProgram program) {
+    	throw new UnsupportedOperationException("Metoda není v této implementaci implementována.");
+    }
+    
+    @Override
+    public Student findById(int id) {
+    	throw new UnsupportedOperationException("Metoda není v této implementaci implementována.");
     }
 }
