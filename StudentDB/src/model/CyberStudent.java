@@ -33,7 +33,7 @@ public class CyberStudent extends Student {
 			}
 			
 	        String hash = hexString.toString();
-	        System.out.println("SHA-256 Haš celé jméno: " + hash);
+                System.out.println("SHA-256 Hash celé jméno: " + hash);
 	        
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException("SHA-256 Error", e);
